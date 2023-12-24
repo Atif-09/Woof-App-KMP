@@ -150,7 +150,8 @@ fun DogItem(
     var expanded by remember { mutableStateOf(false) }
     Card(
         modifier = modifier,
-        backgroundColor = Color(0xFFdbe5dd)
+        backgroundColor = Color(0xFFdbe5dd),
+        shape = RoundedCornerShape(topEnd = 16.dp, bottomStart = 16.dp)
     ) {
         Column(
             modifier = Modifier
