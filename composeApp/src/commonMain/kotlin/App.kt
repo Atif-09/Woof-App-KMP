@@ -2,7 +2,9 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,6 +12,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
@@ -98,7 +103,7 @@ Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontal
     )
 }*/
 
-@OptIn(ExperimentalResourceApi::class)
+@OptIn(ExperimentalResourceApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun WoofApp(text: String) {
     val dogs = listOf(
@@ -114,12 +119,15 @@ fun WoofApp(text: String) {
     )
 
     if (text.isEmpty()){
-        LazyColumn() {
+        LazyVerticalGrid(
+            columns = GridCells.Adaptive(minSize = 400.dp)
+        ) {
+
             items(dogs) {
                 DogItem(
                     dog = it,
                     text,
-                    modifier = Modifier.padding(8.dp)
+                    modifier = Modifier.padding(8.dp).animateItemPlacement()
                 )
             }
         }
@@ -133,7 +141,7 @@ fun WoofApp(text: String) {
                 DogItem(
                     dog = it,
                     text,
-                    modifier = Modifier.padding(8.dp)
+                    modifier = Modifier.padding(8.dp).animateItemPlacement()
                 )
             }
         }
