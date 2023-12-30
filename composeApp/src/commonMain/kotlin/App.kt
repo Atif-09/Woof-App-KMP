@@ -1,7 +1,12 @@
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColor
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,6 +22,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicText
 import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
@@ -40,6 +46,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -102,6 +109,31 @@ Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontal
         modifier = Modifier.padding(16.dp)
     )
 }*/
+
+/////////////////////////  Annotated String Builder Code ///////////////////
+/*Text(
+text = buildAnnotatedString {
+    val startIndex = dogName.indexOf(text, ignoreCase = true)
+    if (startIndex != -1) {
+        append(dogName.substring(0, startIndex))
+        withStyle(
+            style = SpanStyle(
+                fontWeight = FontWeight.Bold,
+                color = Color.Magenta,
+                textDecoration = TextDecoration.Underline
+            )
+        ) {
+            append(dogName.substring(startIndex, startIndex + text.length))
+        }
+        append(dogName.substring(startIndex + text.length))
+    } else {
+        append(dogName)
+    }
+},
+modifier = Modifier.padding(top = 8.dp)
+)*/
+
+/////////////////////////  End   ///////////////////
 
 @OptIn(ExperimentalResourceApi::class, ExperimentalFoundationApi::class)
 @Composable
@@ -239,6 +271,14 @@ fun DogInformation(
     text:String,
     modifier: Modifier = Modifier
 ) {
+
+    val infiniteTransition = rememberInfiniteTransition(label = "infinite transition")
+    val animatedColor by infiniteTransition.animateColor(
+        initialValue = Color(0xFF60DDAD),
+        targetValue = Color(0xFF4285F4),
+        animationSpec = infiniteRepeatable(tween(1000), RepeatMode.Reverse),
+        label = "color"
+    )
     Column(modifier = modifier) {
         if (text.isEmpty()) {
             Text(
@@ -246,26 +286,11 @@ fun DogInformation(
                 modifier = Modifier.padding(top = 8.dp)
             )
         } else {
-            Text(
-                text = buildAnnotatedString {
-                    val startIndex = dogName.indexOf(text, ignoreCase = true)
-                    if (startIndex != -1) {
-                        append(dogName.substring(0, startIndex))
-                        withStyle(
-                            style = SpanStyle(
-                                fontWeight = FontWeight.Bold,
-                                color = Color.Magenta,
-                                textDecoration = TextDecoration.Underline
-                            )
-                        ) {
-                            append(dogName.substring(startIndex, startIndex + text.length))
-                        }
-                        append(dogName.substring(startIndex + text.length))
-                    } else {
-                        append(dogName)
-                    }
-                },
-                modifier = Modifier.padding(top = 8.dp)
+            BasicText(
+                text = dogName,
+                color = {animatedColor},
+                modifier = Modifier.padding(top = 8.dp),
+                style = TextStyle(fontSize = 21.sp, fontWeight = FontWeight.Bold)
             )
         }
 
