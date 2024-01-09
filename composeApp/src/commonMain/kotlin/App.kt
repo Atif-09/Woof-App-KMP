@@ -1,8 +1,11 @@
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColor
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.spring
@@ -34,6 +37,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.materialIcon
 import androidx.compose.material.icons.materialPath
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,6 +46,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -139,15 +144,15 @@ modifier = Modifier.padding(top = 8.dp)
 @Composable
 fun WoofApp(text: String) {
     val dogs = listOf(
-        Dog(painterResource("koda.jpg"), "Koda", 2, ""),
-        Dog(painterResource("lola.jpg"), "Lola", 16, ""),
-        Dog(painterResource("frankie.jpg"), "Frankie", 2, ""),
-        Dog(painterResource("nox.jpg"), "Nox", 8, ""),
-        Dog(painterResource("faye.jpg"), "Faye", 8, ""),
-        Dog(painterResource("bella.jpg"), "Bella", 14, ""),
-        Dog(painterResource("moana.jpg"), "Moana", 2, ""),
-        Dog(painterResource("tzeitel.jpg"), "Tzeitel", 7, ""),
-        Dog(painterResource("leroy.jpg"), "Leroy", 4, "")
+        Dog(painterResource("koda.jpg"), "Koda", 2, "Eating treats on the terrace"),
+        Dog(painterResource("lola.jpg"), "Lola", 16, "Barking at Daddy"),
+        Dog(painterResource("frankie.jpg"), "Frankie", 2, "Stealing socks"),
+        Dog(painterResource("nox.jpg"), "Nox", 8, "Meeting new animals"),
+        Dog(painterResource("faye.jpg"), "Faye", 8, "Digging in the garden"),
+        Dog(painterResource("bella.jpg"), "Bella", 14, "Chasing sea foam"),
+        Dog(painterResource("moana.jpg"), "Moana", 2, "Bothering her paw-rents"),
+        Dog(painterResource("tzeitel.jpg"), "Tzeitel", 7, "Sunbathing"),
+        Dog(painterResource("leroy.jpg"), "Leroy", 4, "Sleeping in dangerous places")
     )
 
     if (text.isEmpty()){
@@ -188,9 +193,13 @@ fun DogItem(
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
+    val color by animateColorAsState(
+        targetValue = if (expanded) Color(0xFFc9e7f9)
+        else Color(0xFFdbe5dd),
+    )
     Card(
         modifier = modifier,
-        backgroundColor = Color(0xFFdbe5dd),
+        backgroundColor = color,
         shape = RoundedCornerShape(topEnd = 16.dp, bottomStart = 16.dp)
     ) {
         Column(
@@ -207,7 +216,7 @@ fun DogItem(
                     .fillMaxWidth()
                     .padding(8.dp)
             ) {
-                DogIcon(dog.imageResourceId)
+                DogIcon(dog.imageResourceId, expanded)
                 DogInformation(dog.name, dog.age, text)
                 Spacer(Modifier.weight(1f))
                 DogItemButton(
@@ -251,17 +260,42 @@ private fun DogItemButton(
 @Composable
 fun DogIcon(
    dogIcon: Painter,
+   expanded: Boolean,
     modifier: Modifier = Modifier
 ) {
-    Image(
-        modifier = modifier
-            .size(64.dp)
-            .padding(8.dp)
-            .clip(RoundedCornerShape(50)),
-        contentScale = ContentScale.Crop,
-        painter = dogIcon,
-        contentDescription = null
+    val infiniteTransition = rememberInfiniteTransition()
+    val angle by infiniteTransition.animateFloat(
+        initialValue = 0F,
+        targetValue = 360F,
+        animationSpec = infiniteRepeatable(
+            animation = tween(2000, easing = LinearEasing)
+        )
     )
+    if (expanded){
+        Image(
+            modifier = modifier
+                .size(64.dp)
+                .padding(8.dp)
+                .clip(RoundedCornerShape(50))
+                .graphicsLayer {
+                    rotationZ = angle
+                },
+            contentScale = ContentScale.Crop,
+            painter = dogIcon,
+            contentDescription = null
+        )
+    } else {
+        Image(
+            modifier = modifier
+                .size(64.dp)
+                .padding(8.dp)
+                .clip(RoundedCornerShape(50)),
+            contentScale = ContentScale.Crop,
+            painter = dogIcon,
+            contentDescription = null
+        )
+    }
+
 }
 
 @Composable
